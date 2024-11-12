@@ -14,15 +14,24 @@ def reconstruct_url(row):
     url = url + reqpath + querystr
     return url
 
-
-
 # Load your data
-csv_file = 'sorted_csv.csv'
+csv_file = 'fixed_cdn_logs.csv'
 csv_df = pd.read_csv(csv_file)
-
 csv_df.columns = csv_df.columns.str.strip().str.lower()
 
-csv_df['full_url'] = csv_df.apply(reconstruct_url, axis=1)
+# new_url = (
+#     'http://fykswkmjb.filerobot.com/' +
+#     csv_df['reqpath'] +
+#     np.where(csv_df['querystr'] != '-', csv_df['querystr'], '')
+# )
 
-csv_df.to_csv('full_url_csv.csv', index=False)
+csv_df2 = csv_df.assign(
+    new_url=lambda x:
+     'http://fykswkmjb.filerobot.com/' + 
+     x.reqpath + 
+     np.where(x.querystr != '-', '?' + x.querystr, ''))
+
+# csv_df['full_url'] = csv_df.apply(reconstruct_url, axis=1)
+
+csv_df2.to_csv('full_url_cdn_logs.csv', index=False)
 print(f"Number of output rows: {len(csv_df)}")
